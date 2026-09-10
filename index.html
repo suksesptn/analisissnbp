@@ -448,76 +448,80 @@
         }
 
         function renderData(data) {
-            const container = document.getElementById('rowsContainer');
-            const emptyState = document.getElementById('emptyState');
-            const resultCount = document.getElementById('resultCount');
-            
-            container.innerHTML = '';
-            resultCount.textContent = `${data.length} jurusan`;
+    const container = document.getElementById('rowsContainer');
+    const emptyState = document.getElementById('emptyState');
+    const resultCount = document.getElementById('resultCount');
+    
+    container.innerHTML = '';
+    resultCount.textContent = `${data.length} jurusan`;
 
-            if (data.length === 0) {
-                container.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return;
-            }
+    if (data.length === 0) {
+        container.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+    }
 
-            container.classList.remove('hidden');
-            emptyState.classList.add('hidden');
+    container.classList.remove('hidden');
+    emptyState.classList.add('hidden');
 
-            data.forEach((item, index) => {
-                const isEven = index % 2 === 0;
-                const rowBg = isEven ? 'row-even' : 'row-odd';
+    data.forEach((item, index) => {
+        const isEven = index % 2 === 0;
+        const rowBg = isEven ? 'row-even' : 'row-odd';
 
-                const row = document.createElement('div');
-                row.className = `accordion-row ${rowBg} border-b border-slate-100 last:border-b-0`;
-                row.dataset.id = index;
+        const row = document.createElement('div');
+        row.className = `accordion-row ${rowBg} border-b border-slate-100 last:border-b-0`;
+        row.dataset.id = index;
 
-                row.innerHTML = `
-                    <div class="grid grid-cols-12 gap-2 sm:gap-4 px-4 sm:px-5 py-4 cursor-pointer" onclick="toggleAccordion(${index})">
-                        <div class="col-span-1 flex items-center">
-                            <span class="text-sm font-semibold text-slate-500">${index + 1}</span>
-                        </div>
-                        <div class="col-span-3 flex items-center">
+        // Layout 2 baris untuk mobile, 1 baris untuk desktop
+        row.innerHTML = `
+            <!-- Baris Utama -->
+            <div class="px-4 sm:px-5 py-3 sm:py-4 cursor-pointer" onclick="toggleAccordion(${index})">
+                <!-- Baris 1: No + PTN + Jurusan -->
+                <div class="flex items-start gap-2 sm:gap-3 mb-2">
+                    <span class="text-sm font-semibold text-slate-500 flex-shrink-0 w-6">${index + 1}</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-sm font-bold text-slate-900">${item.ptn || '-'}</span>
-                        </div>
-                        <div class="col-span-4 flex items-center">
                             <span class="text-sm text-slate-700 font-medium">${item.jurusan || '-'}</span>
                         </div>
-                        <div class="col-span-2 flex items-center justify-center">
-                            <span class="inline-block px-2 py-1 rounded bg-slate-100 text-xs font-semibold text-slate-700">
-                                ${item.lulus}/${item.total}
-                            </span>
-                        </div>
-                        <div class="col-span-1 flex items-center justify-center">
-                            <span class="text-base sm:text-lg font-bold ${parseFloat(item.persentaseLulus) >= 50 ? 'text-emerald-600' : parseFloat(item.persentaseLulus) >= 25 ? 'text-amber-600' : 'text-rose-600'}">
-                                ${item.persentaseLulus}%
-                            </span>
-                        </div>
-                        <div class="col-span-1 flex items-center justify-end">
-                            <button type="button" class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-lg transition-colors" onclick="event.stopPropagation(); toggleAccordion(${index})">
-                                <span class="detail-text">Detail</span>
-                                <i data-lucide="chevron-down" class="w-4 h-4 rotate-icon detail-icon"></i>
-                            </button>
-                        </div>
                     </div>
-
-                    <div class="accordion-detail bg-gradient-to-br from-slate-50 to-emerald-50/30" id="detail-${index}">
-                        <div class="px-4 sm:px-5 py-5">
-                            <div class="flex items-center gap-2 mb-4">
-                                <i data-lucide="calendar" class="w-5 h-5 text-primary"></i>
-                                <h4 class="font-bold text-slate-900">Riwayat Kelulusan - ${item.jurusan} (${item.ptn})</h4>
-                            </div>
-                            
-                            <div id="tahun-container-${index}" class="space-y-4"></div>
-                        </div>
+                </div>
+                
+                <!-- Baris 2: Lulus/Total + % + Tombol Detail -->
+                <div class="flex items-center justify-between pl-8 sm:pl-11">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-block px-2 py-1 rounded bg-slate-100 text-xs font-semibold text-slate-700">
+                            ${item.lulus}/${item.total}
+                        </span>
+                        <span class="text-sm font-bold ${parseFloat(item.persentaseLulus) >= 50 ? 'text-emerald-600' : parseFloat(item.persentaseLulus) >= 25 ? 'text-amber-600' : 'text-rose-600'}">
+                            ${item.persentaseLulus}%
+                        </span>
                     </div>
-                `;
+                    <button type="button" class="inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-lg transition-colors flex-shrink-0" onclick="event.stopPropagation(); toggleAccordion(${index})">
+                        <span class="detail-text">Detail</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 rotate-icon detail-icon"></i>
+                    </button>
+                </div>
+            </div>
 
-                container.appendChild(row);
-            });
+            <!-- Detail Accordion -->
+            <div class="accordion-detail bg-gradient-to-br from-slate-50 to-emerald-50/30" id="detail-${index}">
+                <div class="px-4 sm:px-5 py-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i data-lucide="calendar" class="w-5 h-5 text-primary"></i>
+                        <h4 class="font-bold text-slate-900">Riwayat Kelulusan - ${item.jurusan} (${item.ptn})</h4>
+                    </div>
+                    
+                    <div id="tahun-container-${index}" class="space-y-4"></div>
+                </div>
+            </div>
+        `;
 
-            if (window.lucide) lucide.createIcons();
-        }
+        container.appendChild(row);
+    });
+
+    if (window.lucide) lucide.createIcons();
+}
 
         function toggleAccordion(index) {
             const detail = document.getElementById(`detail-${index}`);
